@@ -673,6 +673,10 @@ def nastavi_log(mapa, datum):
     os.makedirs(mapa, exist_ok=True)
     log.setLevel(logging.INFO)
     fmt = logging.Formatter("%(asctime)s  %(message)s", "%H:%M:%S")
+    # Konzola na Windows (cp1250/cp852) ne pozna vseh znakov (npr. '∩'): namesto napake izpiše '?'.
+    # Datoteka log_*.txt je v UTF-8 in vsebuje izvirne znake.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
     for h in (logging.StreamHandler(sys.stdout), logging.FileHandler(os.path.join(mapa, f"log_{datum}.txt"), encoding="utf-8")):
         h.setFormatter(fmt)
         log.addHandler(h)
